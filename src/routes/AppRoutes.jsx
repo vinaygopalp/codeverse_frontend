@@ -8,39 +8,43 @@ import { useAuth } from "../context/AuthContext"; // Assuming you have an AuthCo
 
 const AppRoutes = () => {
   //   const isAuthenticated = !!localStorage.getItem("token");
-  const { isAuthenticated } = useAuth();
-  return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          isAuthenticated ? (
-            <Navigate to="/dashboard" />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
-      />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-
-      <Route element={<Layout />}>
+  const { isAuthenticated, loading } = useAuth();
+  if (!loading) {
+    return (
+      <Routes>
         <Route
-          path="/dashboard"
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+          path="/"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
-      </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
 
-      <Route
-        path="*"
-        element={
-          <div className="text-center mt-10 text-xl text-gray-700">
-            Page Not Found
-          </div>
-        }
-      />
-    </Routes>
-  );
+        <Route element={<Layout />}>
+          <Route
+            path="/dashboard"
+            element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+          />
+        </Route>
+
+        <Route
+          path="*"
+          element={
+            <div className="text-center mt-10 text-xl text-gray-700">
+              Page Not Found
+            </div>
+          }
+        />
+      </Routes>
+    );
+  } else {
+    return <span className="loading loading-ring loading-xl"></span>;
+  }
 };
 
 export default AppRoutes;
