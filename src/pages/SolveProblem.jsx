@@ -12,6 +12,7 @@ const SolveProblem = () => {
   const [language, setLanguage] = useState('python');
   const [code, setCode] = useState('');
   const [editorTheme, setEditorTheme] = useState('vs-dark');
+  const [showAllTestCases, setShowAllTestCases] = useState(false);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -85,6 +86,10 @@ const SolveProblem = () => {
     );
   }
 
+  const displayedTestCases = showAllTestCases 
+    ? problem.testCases 
+    : problem.testCases.slice(0, 3);
+
   return (
     <div className="flex h-screen bg-base-100">
       {/* Problem Description Section */}
@@ -116,6 +121,42 @@ const SolveProblem = () => {
               <li key={index} className="mb-1">{constraint}</li>
             ))}
           </ul>
+
+          <h2 className="text-xl font-semibold mt-6 mb-2">Test Cases</h2>
+          <div className="space-y-4 mb-4">
+            {displayedTestCases.map((testCase, index) => (
+              <div key={testCase.id} className="card bg-base-200">
+                <div className="card-body p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-semibold">Test Case {index + 1}:</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-sm text-base-content/70">Input:</span>
+                      <pre className="mt-1 p-2 bg-base-300 rounded">
+                        {JSON.stringify(testCase.input, null, 2)}
+                      </pre>
+                    </div>
+                    <div>
+                      <span className="text-sm text-base-content/70">Output:</span>
+                      <pre className="mt-1 p-2 bg-base-300 rounded">
+                        {JSON.stringify(testCase.output.output, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {problem.testCases.length > 3 && (
+            <button
+              className="btn btn-ghost btn-sm w-full mb-6"
+              onClick={() => setShowAllTestCases(!showAllTestCases)}
+            >
+              {showAllTestCases ? 'Show Less' : `Show More (${problem.testCases.length - 3} more)`}
+            </button>
+          )}
 
           <h2 className="text-xl font-semibold mt-6 mb-2">Companies</h2>
           <div className="flex flex-wrap gap-2 mb-6">
