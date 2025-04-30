@@ -1,10 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 // import Signup from "../pages/Signup";
-import Dashboard from "../pages/Dashboard";
+import Dashboard from "../pages/HomePage";
 import Layout from "../components/Layout";
 import Signup from "../pages/Signup";
 import { useAuth } from "../context/AuthContext"; // Assuming you have an AuthContext
+import ProblemsList from "../components/ProblemsList";
 
 const AppRoutes = () => {
   //   const isAuthenticated = !!localStorage.getItem("token");
@@ -29,6 +30,10 @@ const AppRoutes = () => {
           <Route
             path="/dashboard"
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/problems"
+            element={isAuthenticated ? <ProblemsList /> : <Navigate to="/login" />}
           />
         </Route>
 
