@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ProblemsList = () => {
+  const navigate = useNavigate();
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,7 +73,12 @@ const ProblemsList = () => {
               </div>
 
               <div className="card-actions justify-end mt-4">
-                <button className="btn btn-primary">Solve Problem</button>
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => navigate(`/problems/${problem.id}`)}
+                >
+                  Solve Problem
+                </button>
               </div>
             </div>
           </div>

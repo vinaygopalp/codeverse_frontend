@@ -1,0 +1,183 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Editor from '@monaco-editor/react';
+
+const SolveProblem = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [problem, setProblem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [language, setLanguage] = useState('python');
+  const [code, setCode] = useState('');
+  const [editorTheme, setEditorTheme] = useState('vs-dark');
+
+  useEffect(() => {
+    const fetchProblem = async () => {
+      try {
+        // Fetch problem details
+        const problemResponse = await axios.get(
+          `https://codeverse-auth-svc.onrender.com/api/problems/${id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+        setProblem(problemResponse.data);
+
+        // Fetch code template
+        const codeResponse = await axios.get(
+          `https://codeverse-auth-svc.onrender.com/api/problems/${id}/metadata/${language.toLowerCase()}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        setCode(codeResponse.data.evaluator);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch problem details');
+        setLoading(false);
+      }
+    };
+
+    fetchProblem();
+  }, [id, language]);
+
+  const handleLanguageChange = async (newLanguage) => {
+    setLanguage(newLanguage);
+    try {
+      const response = await axios.get(
+        `https://codeverse-auth-svc.onrender.com/api/problems/${id}/metadata/${newLanguage.toLowerCase()}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      setCode(response.data.evaluator);
+    } catch (err) {
+      setError('Failed to fetch code template');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-error m-4">
+        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{error}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen bg-base-100">
+      {/* Problem Description Section */}
+      <div className="w-1/2 overflow-y-auto p-6">
+        <div className="mb-6">
+          <button 
+            onClick={() => navigate('/problems')}
+            className="btn btn-ghost btn-sm"
+          >
+            ← Back to Problems
+          </button>
+        </div>
+
+        <h1 className="text-3xl font-bold mb-4">{problem.title}</h1>
+        
+        <div className="flex gap-2 mb-4">
+          <div className="badge badge-primary">{problem.rating} ★</div>
+          {problem.tags.map((tag, index) => (
+            <span key={index} className="badge badge-outline">{tag}</span>
+          ))}
+        </div>
+
+        <div className="prose max-w-none">
+          <p className="text-lg mb-4">{problem.description}</p>
+
+          <h2 className="text-xl font-semibold mt-6 mb-2">Constraints</h2>
+          <ul className="list-disc pl-6 mb-6">
+            {problem.constraints.map((constraint, index) => (
+              <li key={index} className="mb-1">{constraint}</li>
+            ))}
+          </ul>
+
+          <h2 className="text-xl font-semibold mt-6 mb-2">Companies</h2>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {problem.companies.map((company, index) => (
+              <span key={index} className="badge badge-secondary">{company}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Code Editor Section */}
+      <div className="w-1/2 bg-base-200 flex flex-col">
+        <div className="p-4 border-b border-base-300">
+          <div className="flex justify-between items-center">
+            <div className="tabs tabs-boxed">
+              <button 
+                className={`tab ${language === 'python' ? 'tab-active' : ''}`}
+                onClick={() => handleLanguageChange('python')}
+              >
+                Python
+              </button>
+              <button 
+                className={`tab ${language === 'java' ? 'tab-active' : ''}`}
+                onClick={() => handleLanguageChange('java')}
+              >
+                Java
+              </button>
+              <button 
+                className={`tab ${language === 'c' ? 'tab-active' : ''}`}
+                onClick={() => handleLanguageChange('c')}
+              >
+                C
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <button className="btn btn-primary btn-sm">Run</button>
+              <button className="btn btn-accent btn-sm">Submit</button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1">
+          <Editor
+            height="100%"
+            defaultLanguage={language}
+            value={code}
+            onChange={(value) => setCode(value)}
+            theme={editorTheme}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              lineNumbers: 'on',
+              roundedSelection: false,
+              scrollBeyondLastLine: false,
+              readOnly: false,
+              automaticLayout: true,
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SolveProblem; 

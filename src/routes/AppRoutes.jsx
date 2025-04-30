@@ -6,6 +6,7 @@ import Layout from "../components/Layout";
 import Signup from "../pages/Signup";
 import { useAuth } from "../context/AuthContext"; // Assuming you have an AuthContext
 import ProblemsList from "../components/ProblemsList";
+import SolveProblem from "../pages/SolveProblem";
 
 const AppRoutes = () => {
   //   const isAuthenticated = !!localStorage.getItem("token");
@@ -34,6 +35,10 @@ const AppRoutes = () => {
           <Route
             path="/problems"
             element={isAuthenticated ? <ProblemsList /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/problems/:id"
+            element={isAuthenticated ? <SolveProblem /> : <Navigate to="/login" />}
           />
         </Route>
 
