@@ -11,7 +11,7 @@ const ProblemsList = () => {
   useEffect(() => {
     const fetchProblems = async () => {
       try {
-        const response = await axios.get('https://codeverse-auth-svc.onrender.com/api/problems/', {
+        const response = await axios.get(`${import.meta.env.VITE_BE_URL}/api/problems/`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }

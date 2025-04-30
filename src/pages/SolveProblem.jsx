@@ -18,7 +18,7 @@ const SolveProblem = () => {
       try {
         // Fetch problem details
         const problemResponse = await axios.get(
-          `https://codeverse-auth-svc.onrender.com/api/problems/${id}`,
+          `${import.meta.env.VITE_BE_URL}/api/problems/${id}`,
           {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -29,7 +29,7 @@ const SolveProblem = () => {
 
         // Fetch code template
         const codeResponse = await axios.get(
-          `https://codeverse-auth-svc.onrender.com/api/problems/${id}/metadata/${language.toLowerCase()}`,
+          `${import.meta.env.VITE_BE_URL}/api/problems/${id}/metadata/${language.toLowerCase()}`,
           {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -52,7 +52,7 @@ const SolveProblem = () => {
     setLanguage(newLanguage);
     try {
       const response = await axios.get(
-        `https://codeverse-auth-svc.onrender.com/api/problems/${id}/metadata/${newLanguage.toLowerCase()}`,
+        `${import.meta.env.VITE_BE_URL}/api/problems/${id}/metadata/${newLanguage.toLowerCase()}`,
         {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
