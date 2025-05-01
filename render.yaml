@@ -1,0 +1,9 @@
+staticSites:
+  - type: web
+    name: codeverse-frontend
+    buildCommand: npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: "/*"
+        destination: "/index.html" 
