@@ -13,6 +13,10 @@ const SolveProblem = () => {
   const [code, setCode] = useState('');
   const [editorTheme, setEditorTheme] = useState('vs-dark');
   const [showAllTestCases, setShowAllTestCases] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [submissionMessage, setSubmissionMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ws, setWs] = useState(null);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -47,6 +51,13 @@ const SolveProblem = () => {
     };
 
     fetchProblem();
+
+    // Cleanup WebSocket connection on component unmount
+    return () => {
+      if (ws) {
+        ws.close();
+      }
+    };
   }, [id, language]);
 
   const handleLanguageChange = async (newLanguage) => {
@@ -64,6 +75,64 @@ const SolveProblem = () => {
       setCode(response.data.evaluator);
     } catch (err) {
       setError('Failed to fetch code template');
+    }
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setSubmissionStatus('submitting');
+    setSubmissionMessage('Submitting your solution...');
+
+    try {
+      const userId = localStorage.getItem('userId'); // Assuming you store userId in localStorage
+      const response = await axios.post(
+        `${import.meta.env.VITE_BE_URL}/api/submission/`,
+        {
+          user_id: 1,
+          problem_id: parseInt(id),
+          language: language.toLowerCase(),
+          code: code
+        },
+        {
+          headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json'
+          },
+          withCredentials: true
+      }
+      );
+
+      // Connect to WebSocket
+      const wsUrl = response.data.ws_url;
+      const newWs = new WebSocket(wsUrl);
+
+      newWs.onopen = () => {
+        setSubmissionMessage('Connected to submission server...');
+      };
+
+      newWs.onmessage = (event) => {
+        console.log(event.data);
+        const data = JSON.parse(event.data);
+        setSubmissionStatus(data.status.toLowerCase());
+        setSubmissionMessage(data.message || `Status: ${data.status}`);
+
+        if (data.status === 'COMPLETED' || data.status === 'FAILED') {
+          newWs.close();
+          setIsSubmitting(false);
+        }
+      };
+
+      newWs.onerror = (error) => {
+        setSubmissionStatus('error');
+        setSubmissionMessage('Error connecting to submission server');
+        setIsSubmitting(false);
+      };
+
+      // setWs(newWs);
+    } catch (err) {
+      setSubmissionStatus('error');
+      setSubmissionMessage(err.response?.data?.message || 'Submission failed');
+      setIsSubmitting(false);
     }
   };
 
@@ -193,10 +262,25 @@ const SolveProblem = () => {
             </div>
             <div className="flex gap-2">
               <button className="btn btn-primary btn-sm">Run</button>
-              <button className="btn btn-accent btn-sm">Submit</button>
+              <button 
+                className="btn btn-accent btn-sm"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit'}
+              </button>
             </div>
           </div>
         </div>
+
+        {isSubmitting && (
+          <div className="p-4 border-b border-base-300">
+            <div className="flex items-center gap-2">
+              <span className={`loading loading-spinner loading-sm ${submissionStatus === 'completed' ? 'text-success' : submissionStatus === 'failed' ? 'text-error' : ''}`}></span>
+              <span className="text-sm">{submissionMessage}</span>
+            </div>
+          </div>
+        )}
 
         <div className="flex-1">
           <Editor
