@@ -23,6 +23,9 @@ const Navbar = () => {
             <a href="/problems">Problems</a>
           </li>
           <li>
+            <a href="/contests">Contests</a>
+          </li>
+          <li>
             <a href="/submissions">Submissions</a>
           </li>
           <li>

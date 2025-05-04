@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Editor from '@monaco-editor/react';
 
 const SolveProblem = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const contestId = queryParams.get("contest_id");
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,6 +20,42 @@ const SolveProblem = () => {
   const [submissionMessage, setSubmissionMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ws, setWs] = useState(null);
+  const [contestEndTime, setContestEndTime] = useState(null);
+
+  useEffect(() => {
+    let timer;
+    if (contestId) {
+      // Fetch contest details to get end time
+      axios
+        .get("https://codeverse-latest.onrender.com/message_api/contest_start/")
+        .then((response) => {
+          const contest = (response.data.contests || []).find(
+            (c) => c.contest_id === contestId
+          );
+          if (contest) {
+            setContestEndTime(new Date(contest.end_datetime));
+          }
+        });
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [contestId]);
+
+  useEffect(() => {
+    let timer;
+    if (contestEndTime) {
+      timer = setInterval(() => {
+        if (new Date() > contestEndTime) {
+          // Contest ended, redirect to contests page
+          navigate("/contests");
+        }
+      }, 1000); // check every second
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [contestEndTime, navigate]);
 
   useEffect(() => {
     const fetchProblem = async () => {
