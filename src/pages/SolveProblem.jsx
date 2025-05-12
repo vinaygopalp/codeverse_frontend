@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Editor from '@monaco-editor/react';
+import DiscussionForum from '../components/DiscussionForum';
+import { FaComments } from 'react-icons/fa';
 
 const SolveProblem = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const contestId = queryParams.get("contest_id");
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,42 +19,7 @@ const SolveProblem = () => {
   const [submissionMessage, setSubmissionMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ws, setWs] = useState(null);
-  const [contestEndTime, setContestEndTime] = useState(null);
-
-  useEffect(() => {
-    let timer;
-    if (contestId) {
-      // Fetch contest details to get end time
-      axios
-        .get("https://codeverse-latest.onrender.com/message_api/contest_start/")
-        .then((response) => {
-          const contest = (response.data.contests || []).find(
-            (c) => c.contest_id === contestId
-          );
-          if (contest) {
-            setContestEndTime(new Date(contest.end_datetime));
-          }
-        });
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [contestId]);
-
-  useEffect(() => {
-    let timer;
-    if (contestEndTime) {
-      timer = setInterval(() => {
-        if (new Date() > contestEndTime) {
-          // Contest ended, redirect to contests page
-          navigate("/contests");
-        }
-      }, 1000); // check every second
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [contestEndTime, navigate]);
+  const [showForum, setShowForum] = useState(false);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -272,6 +236,21 @@ const SolveProblem = () => {
               <span key={index} className="badge badge-secondary">{company}</span>
             ))}
           </div>
+
+          <div className="mt-6">
+            <button
+              className="btn btn-outline btn-info w-full flex items-center gap-2"
+              onClick={() => setShowForum((prev) => !prev)}
+            >
+              <FaComments />
+              {showForum ? 'Hide Discussion Forum' : 'Show Discussion Forum'}
+            </button>
+            {showForum && (
+              <div className="mt-4">
+                <DiscussionForum problemName={problem?.title} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -345,3 +324,13 @@ const SolveProblem = () => {
 };
 
 export default SolveProblem; 
+
+
+
+
+
+
+
+
+
+ 

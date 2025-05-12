@@ -5,6 +5,7 @@ import Dashboard from "../pages/HomePage";
 import Layout from "../components/Layout";
 import Signup from "../pages/Signup";
 import { useAuth } from "../context/AuthContext"; // Assuming you have an AuthContext
+import DiscussionForum from '../components/DiscussionForum';
 import ProblemsList from "../components/ProblemsList";
 import SolveProblem from "../pages/SolveProblem";
 import Contests from "../pages/Contests";
@@ -45,7 +46,13 @@ const AppRoutes = () => {
             path="/contests"
             element={isAuthenticated ? <Contests /> : <Navigate to="/login" />}
           />
+          <Route
+            path="/central_forum"
+            element={isAuthenticated ? <DiscussionForum problemName="central" /> : <Navigate to="/login" />}
+          />
         </Route>
+         
+        
 
         <Route
           path="*"
