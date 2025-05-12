@@ -58,6 +58,7 @@ const Contests = () => {
       return;
     }
 
+    
     setExpandedContest(contest.contest_id);
     setProblemsLoading(true);
     const fetchedProblems = {};
