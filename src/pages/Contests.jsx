@@ -13,7 +13,7 @@ const Contests = () => {
 
   const fetchContests = () => {
     axios
-      .get("https://codeverse-latest.onrender.com/message_api/contest_start/")
+      .get(`${import.meta.env.VITE_START_CONTEST_URL}`)
       .then((response) => {
         setContests(response.data.contests || []);
         setLoading(false);
@@ -66,7 +66,7 @@ const Contests = () => {
       contest.problems_id.map(async (pid) => {
         try {
           const res = await axios.get(
-            `${import.meta.env.VITE_BE_URL || "https://codeverse-latest.onrender.com"}/api/problems/${pid}`,
+            `${import.meta.env.VITE_BE_URL}/api/problems/${pid}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
