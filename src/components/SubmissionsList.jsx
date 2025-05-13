@@ -12,7 +12,8 @@ const SubmissionsList = () => {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const userId = localStorage.getItem('userId');
+        // const userId = localStorage.getItem('userId') || '1';
+        const userId = '1';
         let url = `${import.meta.env.VITE_BE_URL}/api/submission/?user_id=${userId}`;
         
         // Add problem_id to URL if viewing problem-specific submissions
