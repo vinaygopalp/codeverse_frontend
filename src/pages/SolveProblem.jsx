@@ -106,32 +106,47 @@ const SolveProblem = () => {
       );
 
       // Connect to WebSocket
-      const wsUrl = response.data.ws_url;
-      const newWs = new WebSocket(wsUrl);
+      const token = localStorage.getItem('token');
+      const wsUrl = `${import.meta.env.VITE_SUBMISSION_URL}/api/submission/status/${response.data.submission.id}`;
+      console.log("Connecting to WebSocket:", wsUrl);
+
+      const newWs = new WebSocket(wsUrl, []);
 
       newWs.onopen = () => {
+        console.log("WebSocket connection established");
         setSubmissionMessage('Connected to submission server...');
       };
 
       newWs.onmessage = (event) => {
-        console.log(event.data);
-        const data = JSON.parse(event.data);
-        setSubmissionStatus(data.status.toLowerCase());
-        setSubmissionMessage(data.message || `Status: ${data.status}`);
+        console.log("WebSocket message received:", event.data);
+        try {
+          const data = JSON.parse(event.data);
+          setSubmissionStatus(data.status.toLowerCase());
+          setSubmissionMessage(data.message || `Status: ${data.status}`);
 
-        if (data.status === 'COMPLETED' || data.status === 'FAILED') {
-          newWs.close();
-          setIsSubmitting(false);
+          if (data.status === 'COMPLETED' || data.status === 'FAILED') {
+            newWs.close();
+            setIsSubmitting(false);
+          }
+        } catch (error) {
+          console.error("Error parsing WebSocket message:", error);
+          setSubmissionStatus('error');
+          setSubmissionMessage('Error processing server response');
         }
       };
 
       newWs.onerror = (error) => {
+        console.error("WebSocket error:", error);
         setSubmissionStatus('error');
         setSubmissionMessage('Error connecting to submission server');
         setIsSubmitting(false);
       };
 
-      // setWs(newWs);
+      newWs.onclose = (event) => {
+        console.log("WebSocket connection closed:", event.code, event.reason);
+      };
+
+      setWs(newWs);
     } catch (err) {
       setSubmissionStatus('error');
       setSubmissionMessage(err.response?.data?.message || 'Submission failed');
