@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Editor from '@monaco-editor/react';
 
-const SubmissionResult = ({ submissionId, onBackToProblem }) => {
+const SubmissionResult = ({ submissionId: propSubmissionId, onBackToProblem }) => {
+  const { id: paramSubmissionId } = useParams();
+  const navigate = useNavigate();
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const submissionId = propSubmissionId || paramSubmissionId;
 
   useEffect(() => {
     const fetchSubmission = async () => {
@@ -29,6 +33,14 @@ const SubmissionResult = ({ submissionId, onBackToProblem }) => {
 
     fetchSubmission();
   }, [submissionId]);
+
+  const handleBack = () => {
+    if (onBackToProblem) {
+      onBackToProblem();
+    } else {
+      navigate(-1);
+    }
+  };
 
   if (loading) {
     return (
@@ -56,10 +68,10 @@ const SubmissionResult = ({ submissionId, onBackToProblem }) => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Submission Result</h1>
           <button 
-            onClick={onBackToProblem}
+            onClick={handleBack}
             className="btn btn-primary"
           >
-            Back to Problem
+            {onBackToProblem ? 'Back to Problem' : 'Back to Submissions'}
           </button>
         </div>
 
