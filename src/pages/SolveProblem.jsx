@@ -4,6 +4,7 @@ import axios from 'axios';
 import Editor from '@monaco-editor/react';
 import DiscussionForum from '../components/DiscussionForum';
 import { FaComments } from 'react-icons/fa';
+import SubmissionResult from '../components/SubmissionResult';
 
 const SolveProblem = () => {
   const { id } = useParams();
@@ -20,6 +21,8 @@ const SolveProblem = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ws, setWs] = useState(null);
   const [showForum, setShowForum] = useState(false);
+  const [showSubmissionResult, setShowSubmissionResult] = useState(false);
+  const [currentSubmissionId, setCurrentSubmissionId] = useState(null);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -87,7 +90,7 @@ const SolveProblem = () => {
     setSubmissionMessage('Submitting your solution...');
 
     try {
-      const userId = localStorage.getItem('userId'); // Assuming you store userId in localStorage
+      const userId = localStorage.getItem('userId');
       const response = await axios.post(
         `${import.meta.env.VITE_BE_URL}/api/submission/`,
         {
@@ -105,39 +108,71 @@ const SolveProblem = () => {
       }
       );
 
+      setCurrentSubmissionId(response.data.submission.id);
+
       // Connect to WebSocket
-      const wsUrl = response.data.ws_url;
-      const newWs = new WebSocket(wsUrl);
+      const token = localStorage.getItem('token');
+      const wsUrl = `${import.meta.env.VITE_SUBMISSION_URL}/api/submission/status/${response.data.submission.id}`;
+      console.log("Connecting to WebSocket:", wsUrl);
+
+      const newWs = new WebSocket(wsUrl, []);
 
       newWs.onopen = () => {
+        console.log("WebSocket connection established");
         setSubmissionMessage('Connected to submission server...');
       };
 
       newWs.onmessage = (event) => {
-        console.log(event.data);
-        const data = JSON.parse(event.data);
-        setSubmissionStatus(data.status.toLowerCase());
-        setSubmissionMessage(data.message || `Status: ${data.status}`);
+        console.log("WebSocket message received:", event.data);
+        try {
+          const data = JSON.parse(event.data);
+          setSubmissionStatus(data.status.toLowerCase());
+          setSubmissionMessage(data.message || `Status: ${data.status}`);
 
-        if (data.status === 'COMPLETED' || data.status === 'FAILED') {
-          newWs.close();
-          setIsSubmitting(false);
+          if (data.status === 'COMPLETED' || data.status === 'FAILED') {
+            newWs.close();
+            setIsSubmitting(false);
+            setShowSubmissionResult(true);
+          }
+        } catch (error) {
+          console.error("Error parsing WebSocket message:", error);
+          setSubmissionStatus('error');
+          setSubmissionMessage('Error processing server response');
         }
       };
 
       newWs.onerror = (error) => {
+        console.error("WebSocket error:", error);
         setSubmissionStatus('error');
         setSubmissionMessage('Error connecting to submission server');
         setIsSubmitting(false);
       };
 
-      // setWs(newWs);
+      newWs.onclose = (event) => {
+        console.log("WebSocket connection closed:", event.code, event.reason);
+      };
+
+      setWs(newWs);
     } catch (err) {
       setSubmissionStatus('error');
       setSubmissionMessage(err.response?.data?.message || 'Submission failed');
       setIsSubmitting(false);
     }
   };
+
+  if (showSubmissionResult) {
+    return (
+      <SubmissionResult 
+        submissionId={currentSubmissionId}
+        onBackToProblem={() => {
+          setShowSubmissionResult(false);
+          setSubmissionStatus(null);
+          setSubmissionMessage('');
+          setCurrentSubmissionId(null);
+        }}
+      />
+    );
+  }
 
   if (loading) {
     return (

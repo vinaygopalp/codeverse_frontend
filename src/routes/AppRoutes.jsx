@@ -9,6 +9,8 @@ import DiscussionForum from '../components/DiscussionForum';
 import ProblemsList from "../components/ProblemsList";
 import SolveProblem from "../pages/SolveProblem";
 import Contests from "../pages/Contests";
+import SubmissionsList from "../components/SubmissionsList";
+import SubmissionResult from "../components/SubmissionResult";
 
 const AppRoutes = () => {
   //   const isAuthenticated = !!localStorage.getItem("token");
@@ -49,6 +51,18 @@ const AppRoutes = () => {
           <Route
             path="/central_forum"
             element={isAuthenticated ? <DiscussionForum problemName="central" /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/problems/:problemId/submissions"
+            element={isAuthenticated ? <SubmissionsList /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/submissions"
+            element={isAuthenticated ? <SubmissionsList /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/submissions/:id"
+            element={isAuthenticated ? <SubmissionResult /> : <Navigate to="/login" />}
           />
         </Route>
          
