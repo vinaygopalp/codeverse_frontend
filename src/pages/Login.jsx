@@ -23,7 +23,7 @@ const Login = () => {
           password,
         }
       );
-      login(response.data.token);
+      login(response.data);
       console.log("Login successful , redirecting");
       navigate("/dashboard");
     } catch (err) {
