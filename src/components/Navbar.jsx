@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; // Assuming you have an AuthContext
-
+import DiscussionForum from '../components/DiscussionForum';
 const Navbar = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -21,6 +21,13 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1">
           <li>
             <a href="/problems">Problems</a>
+          </li>
+          <li>
+            <a href="/contests">Contests</a>
+          </li>
+          <li>
+          
+            <a href="central_forum">Discuss</a>
           </li>
           <li>
             <a href="/submissions">Submissions</a>

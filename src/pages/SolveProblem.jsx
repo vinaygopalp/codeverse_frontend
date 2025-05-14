@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Editor from '@monaco-editor/react';
+import DiscussionForum from '../components/DiscussionForum';
+import { FaComments } from 'react-icons/fa';
 
 const SolveProblem = () => {
   const { id } = useParams();
@@ -17,6 +19,7 @@ const SolveProblem = () => {
   const [submissionMessage, setSubmissionMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ws, setWs] = useState(null);
+  const [showForum, setShowForum] = useState(false);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -233,6 +236,21 @@ const SolveProblem = () => {
               <span key={index} className="badge badge-secondary">{company}</span>
             ))}
           </div>
+
+          <div className="mt-6">
+            <button
+              className="btn btn-outline btn-info w-full flex items-center gap-2"
+              onClick={() => setShowForum((prev) => !prev)}
+            >
+              <FaComments />
+              {showForum ? 'Hide Discussion Forum' : 'Show Discussion Forum'}
+            </button>
+            {showForum && (
+              <div className="mt-4">
+                <DiscussionForum problemName={problem?.title} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -306,3 +324,13 @@ const SolveProblem = () => {
 };
 
 export default SolveProblem; 
+
+
+
+
+
+
+
+
+
+ 
