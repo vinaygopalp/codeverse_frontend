@@ -94,7 +94,7 @@ const SolveProblem = () => {
       const response = await axios.post(
         `${import.meta.env.VITE_BE_URL}/api/submission/`,
         {
-          user_id: 1,
+          user_id: parseInt(userId),
           problem_id: parseInt(id),
           language: language.toLowerCase(),
           code: code
