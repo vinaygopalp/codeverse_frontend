@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; // Assuming you have an AuthContext
 import DiscussionForum from '../components/DiscussionForum';
+
 const Navbar = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const [avatarSeed, setAvatarSeed] = useState('');
+
+  useEffect(() => {
+    const username = localStorage.getItem('username');
+    if (username) {
+      setAvatarSeed(username.charAt(0).toUpperCase());
+    }
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -40,7 +50,7 @@ const Navbar = () => {
           <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
             <div className="w-10 rounded-full">
               <img
-                src="https://api.dicebear.com/7.x/initials/svg?seed=VK"
+                src={`https://api.dicebear.com/7.x/initials/svg?seed=${avatarSeed}`}
                 alt="avatar"
               />
             </div>
