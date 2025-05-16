@@ -81,8 +81,9 @@ const SubmissionResult = ({ submissionId: propSubmissionId, onBackToProblem }) =
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-semibold mb-2">
-                  Status: <span className={submission.status === 'COMPLETED' ? 'text-success' : 'text-error'}>
-                    {submission.status}
+                  Status: <span className={Math.round((submission.test_cases_passed / submission.total_test_cases) * 100) === 100 ? 'text-success' : 'text-error'}>
+{/*                     {submission.status} */}
+                    {Math.round((submission.test_cases_passed / submission.total_test_cases) * 100) === 100 ? 'PASSED' : 'FAILED'}
                   </span>
                 </h2>
                 <p className="text-lg">
