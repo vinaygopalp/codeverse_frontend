@@ -57,7 +57,7 @@ const Contests = () => {
       // Call contest registration API
       const userId = localStorage.getItem("userId");
       const response = await axios.post(
-        "https://codeverse-latest.onrender.com/message_api/contest_registration/",
+        `${import.meta.env.VITE_CONTEST_REGISTRATION}`,
         {
           user_id: parseInt(userId),
           contest_title: contest.contest_id
