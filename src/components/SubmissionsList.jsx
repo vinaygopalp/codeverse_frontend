@@ -55,9 +55,14 @@ const SubmissionsList = () => {
         const submissionsData = (Array.isArray(response.data) ? response.data : [response.data])
           .map(sub => ({
             ...sub,
-            problem: sub.problem || { title: 'Unknown Problem' },
+            problem: {
+              id: sub.problem_id,
+              title: sub.problem_title || `Submission #${sub.id}`,
+              difficulty: sub.problem_difficulty || 'Unknown'
+            },
             status: sub.status || 'Unknown',
             runtime: sub.runtime || 0,
+            memory: sub.memory || 0,
             language: sub.language || 'Unknown',
             submitted_at: sub.submitted_at || new Date().toISOString()
           }));
