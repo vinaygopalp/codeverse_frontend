@@ -20,35 +20,19 @@ export const AuthProvider = ({ children }) => {
     const storedRoles = JSON.parse(localStorage.getItem("roles") || "[]");
 
     if (storedToken) {
-      // Verify token validity by making a test request
-      axiosInstance.get(`${import.meta.env.VITE_BE_URL}/api/verify-token`)
-        .then(() => {
-          console.log("AuthProvider mounted with valid token");
-          setToken(storedToken);
-          setUserData({
-            userId: storedUserId,
-            username: storedUsername,
-            roles: storedRoles
-          });
-          setIsAuthenticated(true);
-        })
-        .catch(() => {
-          console.log("AuthProvider mounted with invalid token");
-          // Clear invalid token
-          localStorage.removeItem("token");
-          localStorage.removeItem("userId");
-          localStorage.removeItem("username");
-          localStorage.removeItem("roles");
-          setIsAuthenticated(false);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      console.log("AuthProvider mounted with token");
+      setToken(storedToken);
+      setUserData({
+        userId: storedUserId,
+        username: storedUsername,
+        roles: storedRoles
+      });
+      setIsAuthenticated(true);
     } else {
       console.log("AuthProvider mounted without token");
       setIsAuthenticated(false);
-      setLoading(false);
     }
+    setLoading(false);
   }, []);
 
   const login = (userData) => {
