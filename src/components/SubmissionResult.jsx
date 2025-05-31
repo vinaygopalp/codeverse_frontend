@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Editor from '@monaco-editor/react';
-import { FaArrowLeft, FaCode, FaClock, FaMemory, FaLanguage } from 'react-icons/fa';
+import { FaArrowLeft, FaCode, FaLanguage, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const SubmissionResult = ({ submissionId: propSubmissionId, onBackToProblem }) => {
   const { id: paramSubmissionId } = useParams();
@@ -95,28 +95,26 @@ const SubmissionResult = ({ submissionId: propSubmissionId, onBackToProblem }) =
   }
 
   const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'accepted':
-        return 'bg-success/20 text-success border-success/50';
-      case 'wrong answer':
-        return 'bg-error/20 text-error border-error/50';
-      case 'time limit exceeded':
-        return 'bg-warning/20 text-warning border-warning/50';
-      default:
-        return 'bg-base-content/20 text-base-content border-base-content/50';
+    const accuracy = (submission.test_cases_passed / submission.total_test_cases) * 100;
+    
+    if (accuracy === 100) {
+      return 'bg-success/20 text-success border-success/50';
+    } else if (accuracy > 0) {
+      return 'bg-warning/20 text-warning border-warning/50';
+    } else {
+      return 'bg-error/20 text-error border-error/50';
     }
   };
 
-  const getDifficultyColor = (rating) => {
-    switch (rating) {
-      case 1:
-        return 'bg-success/20 text-success border-success/50';
-      case 2:
-        return 'bg-warning/20 text-warning border-warning/50';
-      case 3:
-        return 'bg-error/20 text-error border-error/50';
-      default:
-        return 'bg-base-content/20 text-base-content border-base-content/50';
+  const getStatusText = () => {
+    const accuracy = (submission.test_cases_passed / submission.total_test_cases) * 100;
+    
+    if (accuracy === 100) {
+      return 'All Tests Passed';
+    } else if (accuracy > 0) {
+      return 'Partially Passed';
+    } else {
+      return 'All Tests Failed';
     }
   };
 
@@ -157,52 +155,13 @@ const SubmissionResult = ({ submissionId: propSubmissionId, onBackToProblem }) =
               <div>
                 <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
                   <FaCode className="text-primary" />
-                  Problem Details
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-lg font-medium opacity-70">Title</h3>
-                    <p className="text-lg">{submission.problem?.title || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium opacity-70">Difficulty</h3>
-                    <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold border ${getDifficultyColor(submission.problem?.rating)}`}>
-                      {submission.problem?.rating === 1 ? 'Easy' :
-                       submission.problem?.rating === 2 ? 'Medium' :
-                       submission.problem?.rating === 3 ? 'Hard' : 'N/A'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                  <FaCode className="text-primary" />
                   Submission Details
                 </h2>
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-medium opacity-70">Status</h3>
-                    <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold border ${getStatusColor(submission.status)}`}>
-                      {submission.status || 'N/A'}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="text-lg font-medium opacity-70 flex items-center gap-2">
-                        <FaClock className="text-primary" />
-                        Runtime
-                      </h3>
-                      <p className="text-lg">{submission.runtime ? `${submission.runtime} ms` : 'N/A'}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-medium opacity-70 flex items-center gap-2">
-                        <FaMemory className="text-primary" />
-                        Memory
-                      </h3>
-                      <p className="text-lg">{submission.memory ? `${submission.memory} MB` : 'N/A'}</p>
+                    <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold border ${getStatusColor()}`}>
+                      {getStatusText()}
                     </div>
                   </div>
                   <div>
@@ -212,6 +171,64 @@ const SubmissionResult = ({ submissionId: propSubmissionId, onBackToProblem }) =
                     </h3>
                     <p className="text-lg">{submission.language || 'N/A'}</p>
                   </div>
+                  <div>
+                    <h3 className="text-lg font-medium opacity-70">Test Cases</h3>
+                    <p className="text-lg">
+                      {submission.test_cases_passed} / {submission.total_test_cases} passed
+                      <span className="ml-2 text-sm opacity-70">
+                        (Accuracy: {((submission.test_cases_passed / submission.total_test_cases) * 100).toFixed(1)}%)
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                  <FaCode className="text-primary" />
+                  Test Results
+                </h2>
+                <div className="space-y-4">
+                  {submission.submission_tests?.map((test, index) => (
+                    <div key={test.id} className="bg-base-300 p-4 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        {test.status === 'passed' ? (
+                          <FaCheckCircle className="text-success" />
+                        ) : (
+                          <FaTimesCircle className="text-error" />
+                        )}
+                        <span className="font-medium">Test Case {index + 1}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="opacity-70">Input:</p>
+                          <pre className="mt-1">{JSON.stringify(test.input, null, 2)}</pre>
+                        </div>
+                        <div>
+                          <p className="opacity-70"> Output:</p>
+                          <pre className="mt-1">{JSON.stringify(test.output, null, 2)}</pre>
+                        </div>
+                        <div>
+                          <p className="opacity-70">Expected Output:</p>
+                          <pre className="mt-1">{JSON.stringify(test.actual, null, 2)}</pre>
+                        </div>
+                        {test.error && (
+                          <div>
+                            <p className="opacity-70">Error:</p>
+                            <pre className="mt-1 text-error">{test.error}</pre>
+                          </div>
+                        )}
+                        {test.stdout && (
+                          <div>
+                            <p className="opacity-70">Console Output:</p>
+                            <pre className="mt-1 bg-base-200 p-2 rounded">{test.stdout}</pre>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -241,22 +258,6 @@ const SubmissionResult = ({ submissionId: propSubmissionId, onBackToProblem }) =
               />
             </div>
           </div>
-
-          {submission.error_message && (
-            <div className="mt-8 space-y-4">
-              <h2 className="text-2xl font-semibold text-error flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                Error Message
-              </h2>
-              <div className="bg-error/10 rounded-lg p-4 border border-error/20">
-                <pre className="text-error whitespace-pre-wrap font-mono text-sm">
-                  {submission.error_message}
-                </pre>
-              </div>
-            </div>
-          )}
         </div>
       </motion.div>
     </motion.div>
