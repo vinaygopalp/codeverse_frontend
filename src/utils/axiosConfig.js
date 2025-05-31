@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
 
 // Create axios instance
 const axiosInstance = axios.create();
@@ -14,6 +13,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
@@ -24,19 +24,32 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.log('=== Axios Error Details ===');
+    console.log('Error object:', error);
+    console.log('Error response:', error.response);
+    console.log('Error status:', error.response?.status);
+    console.log('Error data:', error.response?.data);
+    console.log('Error headers:', error.response?.headers);
+    console.log('Current token:', localStorage.getItem('token'));
+    console.log('========================');
+    
+    // Handle server response errors
     if (error.response) {
-      // Handle token expiration (401 Unauthorized)
-      if (error.response.status === 401) {
+      // Handle token expiration (401 Unauthorized) or Not Found (404)
+      if (error.response.status === 401 || error.response.status === 404) {
+        console.log('Handling 401/404 response - clearing storage');
+        
         // Clear local storage
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
         localStorage.removeItem('username');
         localStorage.removeItem('roles');
         
-        // Redirect to login page
+        // Force reload the page to clear any cached state
         window.location.href = '/login';
       }
     }
+    
     return Promise.reject(error);
   }
 );

@@ -2,11 +2,10 @@ import "./App.css";
 import AppRoutes from "./routes/AppRoutes";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import axios from "axios";
 import axiosInstance from "./utils/axiosConfig";
 
-// Set axios as the default instance
-axios.defaults = axiosInstance.defaults;
+// Make the configured axios instance available globally
+window.axios = axiosInstance;
 
 function App() {
   return (
