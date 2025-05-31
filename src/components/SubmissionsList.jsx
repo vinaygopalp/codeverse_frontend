@@ -14,9 +14,9 @@ const SubmissionsList = () => {
   const [sortOrder, setSortOrder] = useState('desc');
   const [stats, setStats] = useState({
     total: 0,
-    accepted: 0,
-    wrongAnswer: 0,
-    timeLimit: 0
+    allPassed: 0,
+    partiallyPassed: 0,
+    allFailed: 0
   });
 
   useEffect(() => {
@@ -61,37 +61,30 @@ const SubmissionsList = () => {
               difficulty: sub.problem_difficulty || 'Unknown'
             },
             status: sub.status || 'Unknown',
-            runtime: sub.runtime || 0,
-            memory: sub.memory || 0,
             language: sub.language || 'Unknown',
-            submitted_at: sub.submitted_at || new Date().toISOString()
+            submitted_at: sub.submitted_at || new Date().toISOString(),
+            test_cases_passed: sub.test_cases_passed || 0,
+            total_test_cases: sub.total_test_cases || 0
           }));
 
         console.log('Processed submissions data:', submissionsData);
         setSubmissions(submissionsData);
         
-        // Calculate stats
+        // Calculate stats based on test cases
         const stats = submissionsData.reduce((acc, sub) => {
           acc.total++;
-          const status = (sub.status || '').toLowerCase();
-          switch(status) {
-            case 'accepted':
-            case 'completed':
-            case 'success':
-              acc.accepted++; 
-              break;
-            case 'wrong answer':
-            case 'failed':
-            case 'error':
-              acc.wrongAnswer++; 
-              break;
-            case 'time limit exceeded':
-            case 'timeout':
-              acc.timeLimit++; 
-              break;
+          const accuracy = (sub.test_cases_passed / sub.total_test_cases) * 100;
+          
+          if (accuracy === 100) {
+            acc.allPassed++;
+          } else if (accuracy > 0) {
+            acc.partiallyPassed++;
+          } else {
+            acc.allFailed++;
           }
+          
           return acc;
-        }, { total: 0, accepted: 0, wrongAnswer: 0, timeLimit: 0 });
+        }, { total: 0, allPassed: 0, partiallyPassed: 0, allFailed: 0 });
         
         console.log('Calculated stats:', stats);
         setStats(stats);
@@ -144,55 +137,51 @@ const SubmissionsList = () => {
       }
     });
 
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case 'accepted':
-      case 'completed':
-      case 'success':
-        return 'bg-success/20 dark:bg-success/10 border-2 border-success dark:border-success/50';
-      case 'wrong answer':
-      case 'failed':
-      case 'error':
-        return 'bg-error/20 dark:bg-error/10 border-2 border-error dark:border-error/50';
-      case 'time limit exceeded':
-      case 'timeout':
-        return 'bg-warning/20 dark:bg-warning/10 border-2 border-warning dark:border-warning/50';
-      default:
-        return 'bg-base-300/20 dark:bg-base-300/10 border-2 border-base-300 dark:border-base-300/50';
+  const getStatusColor = (submission) => {
+    const accuracy = (submission.test_cases_passed / submission.total_test_cases) * 100;
+    
+    if (accuracy === 100) {
+      return 'bg-success/20 dark:bg-success/10 border-2 border-success dark:border-success/50';
+    } else if (accuracy > 0) {
+      return 'bg-warning/20 dark:bg-warning/10 border-2 border-warning dark:border-warning/50';
+    } else {
+      return 'bg-error/20 dark:bg-error/10 border-2 border-error dark:border-error/50';
     }
   };
 
-  const getStatusIcon = (status) => {
-    switch (status.toLowerCase()) {
-      case 'accepted':
-      case 'completed':
-      case 'success':
-        return (
-          <svg className="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-          </svg>
-        );
-      case 'wrong answer':
-      case 'failed':
-      case 'error':
-        return (
-          <svg className="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        );
-      case 'time limit exceeded':
-      case 'timeout':
-        return (
-          <svg className="w-4 h-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        );
-      default:
-        return (
-          <svg className="w-4 h-4 text-base-content/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        );
+  const getStatusText = (submission) => {
+    const accuracy = (submission.test_cases_passed / submission.total_test_cases) * 100;
+    
+    if (accuracy === 100) {
+      return 'All Tests Passed';
+    } else if (accuracy > 0) {
+      return 'Partially Passed';
+    } else {
+      return 'All Tests Failed';
+    }
+  };
+
+  const getStatusIcon = (submission) => {
+    const accuracy = (submission.test_cases_passed / submission.total_test_cases) * 100;
+    
+    if (accuracy === 100) {
+      return (
+        <svg className="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+        </svg>
+      );
+    } else if (accuracy > 0) {
+      return (
+        <svg className="w-4 h-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+    } else {
+      return (
+        <svg className="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      );
     }
   };
 
@@ -330,10 +319,10 @@ const SubmissionsList = () => {
           transition={{ delay: 0.2 }}
           className="stat bg-base-200 shadow-lg rounded-lg"
         >
-          <div className="stat-title text-base-content/70">Accepted</div>
-          <div className="stat-value text-success">{stats.accepted}</div>
+          <div className="stat-title text-base-content/70">All Tests Passed</div>
+          <div className="stat-value text-success">{stats.allPassed}</div>
           <div className="stat-desc text-success/70">
-            {((stats.accepted / stats.total) * 100).toFixed(1)}% success rate
+            {((stats.allPassed / stats.total) * 100).toFixed(1)}% success rate
           </div>
         </motion.div>
         <motion.div
@@ -342,8 +331,8 @@ const SubmissionsList = () => {
           transition={{ delay: 0.3 }}
           className="stat bg-base-200 shadow-lg rounded-lg"
         >
-          <div className="stat-title text-base-content/70">Wrong Answers</div>
-          <div className="stat-value text-error">{stats.wrongAnswer}</div>
+          <div className="stat-title text-base-content/70">Partially Passed</div>
+          <div className="stat-value text-warning">{stats.partiallyPassed}</div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -351,8 +340,8 @@ const SubmissionsList = () => {
           transition={{ delay: 0.4 }}
           className="stat bg-base-200 shadow-lg rounded-lg"
         >
-          <div className="stat-title text-base-content/70">Time Limit</div>
-          <div className="stat-value text-warning">{stats.timeLimit}</div>
+          <div className="stat-title text-base-content/70">All Tests Failed</div>
+          <div className="stat-value text-error">{stats.allFailed}</div>
         </motion.div>
       </div>
 
@@ -374,21 +363,24 @@ const SubmissionsList = () => {
                       {submission.problem.title}
                     </h2>
                     <div className="flex items-center gap-2 mt-2">
-                      <div className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(submission.status)} flex items-center gap-1`}>
-                        {getStatusIcon(submission.status)}
-                        <span className="text-base-content font-medium">{submission.status}</span>
-                      </div>
-                      <div className="text-sm font-medium text-base-content/70 flex items-center gap-1">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {submission.runtime} ms
+                      <div className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(submission)} flex items-center gap-1`}>
+                        {getStatusIcon(submission)}
+                        <span className="text-base-content font-medium">{getStatusText(submission)}</span>
                       </div>
                       <div className="text-sm font-medium text-base-content/70 flex items-center gap-1">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         {submission.language}
+                      </div>
+                      <div className="text-sm font-medium text-base-content/70 flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        {submission.test_cases_passed} / {submission.total_test_cases} passed
+                        <span className="text-xs opacity-70">
+                          ({((submission.test_cases_passed / submission.total_test_cases) * 100).toFixed(1)}%)
+                        </span>
                       </div>
                     </div>
                   </div>
