@@ -49,7 +49,7 @@ const Login = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-800 bg-clip-text text-transparent">
                 Welcome Back
               </h2>
               <p className="text-base-content/70 mt-2">
@@ -128,14 +128,14 @@ const Login = () => {
               className="text-center mt-8 text-base-content/70"
             >
               Don't have an account?{" "}
-              <a href="/signup" className="text-primary hover:text-primary-focus font-semibold">
+              <a href="/signup" className="text-blue-700 hover:text-blue-800 font-semibold">
                 Sign up
               </a>
             </motion.p>
           </div>
 
           {/* Right Side - Image/Info */}
-          <div className="hidden md:block bg-gradient-to-br from-primary to-secondary p-12 text-white">
+          <div className="hidden md:block bg-gradient-to-br from-blue-700 via-indigo-600 to-blue-800 p-12 text-white">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}

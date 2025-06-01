@@ -24,7 +24,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-base-100 text-base-content transition-colors duration-300">
       {/* Hero Section with Parallax Effect */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 animate-gradient" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-700/10 via-indigo-600/10 to-blue-800/10 animate-gradient" />
         <div className="hero min-h-screen relative">
           <div className="hero-content flex-col lg:flex-row-reverse gap-16 max-w-7xl mx-auto px-6">
             <motion.div
@@ -33,10 +33,28 @@ const Dashboard = () => {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="lg:w-1/2"
             >
-              <img
+              <motion.img
                 src={heroImg}
-                className="w-full rounded-xl shadow-2xl border-4 border-base-content/10 hover:border-primary/30 transition-all duration-300"
+                className="w-full rounded-xl shadow-2xl border-4 border-base-content/10 hover:border-blue-700/30 transition-all duration-300"
                 alt="CodeVerse Hero"
+                animate={{
+                  y: [0, -12, 0],
+                  rotate: [0, 0.5, 0, -0.5, 0],
+                  scale: [1, 1.01, 1],
+                }}
+                transition={{
+                  duration: 10,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                whileHover={{
+                  scale: 1.03,
+                  rotate: [0, 1, 0, -1, 0],
+                  transition: {
+                    duration: 1.2,
+                    ease: "easeInOut"
+                  }
+                }}
               />
             </motion.div>
             <motion.div
@@ -45,8 +63,8 @@ const Dashboard = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="lg:w-1/2 text-center lg:text-left"
             >
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Welcome to <span className="text-yellow-400">CodeVerse</span>
+              <h1 className="text-5xl lg:text-7xl font-bold leading-tight mb-6 bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-800 bg-clip-text text-transparent">
+                Welcome to <span className="text-blue-500">CodeVerse</span>
               </h1>
               <p className="text-xl mb-8 text-base-content/80">
                 Elevate your coding skills with our cutting-edge platform. Practice, compete, and grow with a community of passionate developers.
@@ -104,7 +122,7 @@ const Dashboard = () => {
             viewport={{ once: true }}
             className="text-4xl font-bold text-center mb-16"
           >
-            Why Choose <span className="text-primary">CodeVerse?</span>
+            Why Choose <span className="text-blue-700">CodeVerse?</span>
           </motion.h2>
           <motion.div
             variants={staggerContainer}
@@ -118,19 +136,19 @@ const Dashboard = () => {
                 icon: "⚡",
                 title: "Real-time Code Execution",
                 desc: "Experience lightning-fast code execution with our optimized infrastructure.",
-                color: "from-blue-500 to-cyan-500"
+                color: "from-blue-700 to-indigo-600"
               },
               {
                 icon: "📊",
                 title: "Advanced Analytics",
                 desc: "Track your progress with detailed analytics and personalized insights.",
-                color: "from-purple-500 to-pink-500"
+                color: "from-indigo-600 to-blue-800"
               },
               {
                 icon: "🤝",
                 title: "Community Driven",
                 desc: "Join a vibrant community of developers and learn together.",
-                color: "from-orange-500 to-red-500"
+                color: "from-blue-800 to-blue-700"
               }
             ].map((feature, index) => (
               <motion.div
@@ -189,7 +207,7 @@ const Dashboard = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20">
+      <section className="py-20 bg-base-200">
         <div className="max-w-7xl mx-auto px-6">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -197,30 +215,33 @@ const Dashboard = () => {
             viewport={{ once: true }}
             className="text-4xl font-bold text-center mb-16"
           >
-            What Our Users Say
+            Success Stories
           </motion.h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                quote: "CodeVerse helped me land my dream job at a top tech company!",
-                author: "Sarah Chen",
-                role: "Software Engineer",
-                company: "Tech Corp",
-                color: "#4a9eff"
+                quote: "CodeVerse's structured learning path and real-world problem sets were instrumental in my journey. The platform's emphasis on practical coding challenges helped me develop the exact skills needed for my role at Google. The community support and mentorship features are truly exceptional.",
+                author: "Arjun Sharma",
+                role: "Senior Software Engineer",
+                company: "Google",
+                color: "#4285F4",
+                achievement: "Cleared 500+ problems, 4.5/5 rating"
               },
               {
-                quote: "The best platform for practicing coding interviews.",
-                author: "Michael Rodriguez",
-                role: "Full Stack Developer",
-                company: "StartupX",
-                color: "#ff5f56"
+                quote: "What sets CodeVerse apart is its comprehensive interview preparation system. The platform's mock interviews and detailed feedback helped me identify and improve my weak areas. I went from struggling with basic algorithms to confidently solving complex system design problems.",
+                author: "Riya Patel",
+                role: "Lead Backend Developer",
+                company: "Microsoft",
+                color: "#00A4EF",
+                achievement: "Top 100 in monthly contests, 3x job offers"
               },
               {
-                quote: "Amazing community and learning resources!",
-                author: "Priya Patel",
-                role: "Backend Developer",
-                company: "InnovateTech",
-                color: "#27c93f"
+                quote: "The platform's focus on both theoretical knowledge and practical implementation is outstanding. CodeVerse's project-based learning approach helped me build a strong portfolio that caught the attention of top tech recruiters. The community is incredibly supportive and knowledgeable.",
+                author: "Vikram Singh",
+                role: "Full Stack Architect",
+                company: "Amazon",
+                color: "#FF9900",
+                achievement: "Mentored 50+ developers, 5-star contributor"
               }
             ].map((testimonial, index) => (
               <motion.div
@@ -235,11 +256,13 @@ const Dashboard = () => {
                   <div className="flex items-center gap-4 mb-4">
                     <TestimonialAvatar name={testimonial.author} color={testimonial.color} />
                     <div>
-                      <h4 className="font-bold">{testimonial.author}</h4>
-                      <p className="text-sm text-base-content/70">{testimonial.role} at {testimonial.company}</p>
+                      <h4 className="font-bold text-lg">{testimonial.author}</h4>
+                      <p className="text-sm text-base-content/70">{testimonial.role}</p>
+                      <p className="text-sm text-base-content/70">{testimonial.company}</p>
+                      <p className="text-xs text-primary mt-1">{testimonial.achievement}</p>
                     </div>
                   </div>
-                  <p className="text-lg italic">"{testimonial.quote}"</p>
+                  <p className="text-base italic leading-relaxed">"{testimonial.quote}"</p>
                 </div>
               </motion.div>
             ))}

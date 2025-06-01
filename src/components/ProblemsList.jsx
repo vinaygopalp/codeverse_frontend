@@ -77,7 +77,7 @@ const ProblemsList = () => {
         <motion.h1
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="text-4xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-400 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-300 bg-clip-text text-transparent"
+          className="text-4xl font-bold bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-800 bg-clip-text text-transparent"
         >
           Coding Problems
         </motion.h1>
@@ -158,11 +158,11 @@ const ProblemsList = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="btn bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 dark:from-indigo-500 dark:to-purple-500 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-white font-semibold border-none relative overflow-hidden group shadow-lg"
+                  className="btn bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-800 hover:from-blue-800 hover:via-indigo-700 hover:to-blue-900 text-white font-semibold border-none relative overflow-hidden group shadow-lg"
                   onClick={() => navigate(`/problems/${problem.id}`)}
                 >
                   <span className="relative z-10">Solve Problem</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-purple-700 dark:from-indigo-600 dark:to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-800 via-indigo-700 to-blue-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </motion.button>
               </div>
               
@@ -177,7 +177,7 @@ const ProblemsList = () => {
                       key={index}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="px-3 py-1 rounded-full text-sm font-medium bg-base-300/50 hover:bg-indigo-500/20 text-base-content hover:text-indigo-500 dark:hover:text-indigo-400 border border-base-300 hover:border-indigo-500/30 transition-all duration-300 cursor-pointer flex items-center gap-1"
+                      className="px-3 py-1 rounded-full text-sm font-medium bg-blue-700/10 text-blue-700 dark:text-blue-400 border border-blue-700/20 hover:bg-blue-700/20 transition-all duration-300 cursor-pointer flex items-center gap-1"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -193,7 +193,7 @@ const ProblemsList = () => {
                       key={index}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 transition-all duration-300 flex items-center gap-1"
+                      className="px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/10 text-blue-700 dark:text-blue-400 border border-blue-700/20 hover:bg-blue-700/20 transition-all duration-300 flex items-center gap-1"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />

@@ -234,12 +234,12 @@ const SolveProblem = () => {
 
   return (
     <div className="min-h-screen bg-base-200 pt-16">
-      <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
+      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-4rem)]">
         {/* Problem Description Section */}
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="w-full lg:w-1/2 overflow-y-auto p-6 bg-base-100"
+          className="w-full lg:w-1/2 overflow-y-auto p-4 lg:p-6 bg-base-100"
         >
           <div className="max-w-4xl mx-auto">
             <motion.button 
@@ -433,11 +433,11 @@ const SolveProblem = () => {
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="w-full lg:w-1/2 bg-base-200 flex flex-col"
+          className="w-full lg:w-1/2 bg-base-200 flex flex-col h-[500px] lg:h-auto"
         >
           <div className="p-4 border-b border-base-300 bg-base-100 sticky top-16 z-10 shadow-lg">
-            <div className="flex justify-between items-center">
-              <div className="tabs tabs-boxed bg-base-200">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="tabs tabs-boxed bg-base-200 w-full sm:w-auto">
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -463,18 +463,18 @@ const SolveProblem = () => {
                   C
                 </motion.button>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="btn btn-primary btn-sm gap-2 shadow-lg hover:shadow-xl"
+                  className="btn btn-primary btn-sm gap-2 shadow-lg hover:shadow-xl flex-1 sm:flex-none"
                 >
                   <FaPlay /> Run
                 </motion.button>
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="btn btn-accent btn-sm gap-2 shadow-lg hover:shadow-xl"
+                  className="btn btn-accent btn-sm gap-2 shadow-lg hover:shadow-xl flex-1 sm:flex-none"
                   onClick={handleSubmit}
                   disabled={isSubmitting}
                 >
@@ -504,7 +504,7 @@ const SolveProblem = () => {
             )}
           </AnimatePresence>
 
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden min-h-[300px]">
             <Editor
               height="100%"
               defaultLanguage={language}
