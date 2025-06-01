@@ -47,7 +47,7 @@ const Signup = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-800 bg-clip-text text-transparent">
                 Create Account
               </h2>
               <p className="text-base-content/70 mt-2">
@@ -71,7 +71,7 @@ const Signup = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Choose a username"
-                    className="input input-bordered w-full pl-10 bg-base-200 border-base-300 focus:border-primary"
+                    className="input input-bordered w-full pl-10 bg-base-200 border-base-300 focus:border-blue-700"
                     required
                   />
                 </div>
@@ -85,7 +85,7 @@ const Signup = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="input input-bordered w-full pl-10 bg-base-200 border-base-300 focus:border-primary"
+                    className="input input-bordered w-full pl-10 bg-base-200 border-base-300 focus:border-blue-700"
                     required
                   />
                 </div>
@@ -99,7 +99,7 @@ const Signup = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a password"
-                    className="input input-bordered w-full pl-10 bg-base-200 border-base-300 focus:border-primary"
+                    className="input input-bordered w-full pl-10 bg-base-200 border-base-300 focus:border-blue-700"
                     required
                   />
                 </div>
@@ -153,14 +153,14 @@ const Signup = () => {
               className="text-center mt-8 text-base-content/70"
             >
               Already have an account?{" "}
-              <a href="/login" className="text-primary hover:text-primary-focus font-semibold">
+              <a href="/login" className="text-blue-700 hover:text-blue-800 font-semibold">
                 Sign in
               </a>
             </motion.p>
           </div>
 
           {/* Right Side - Image/Info */}
-          <div className="hidden md:block bg-gradient-to-br from-primary to-secondary p-12 text-white">
+          <div className="hidden md:block bg-gradient-to-br from-blue-700 via-indigo-600 to-blue-800 p-12 text-white">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
