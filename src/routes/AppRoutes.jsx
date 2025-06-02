@@ -12,7 +12,7 @@ import Contests from "../pages/Contests";
 import ContestProblems from "../pages/ContestProblems";
 import SubmissionsList from "../components/SubmissionsList";
 import SubmissionResult from "../components/SubmissionResult";
-
+import Profile from "../components/Profile";
 
 const AppRoutes = () => {
   //   const isAuthenticated = !!localStorage.getItem("token");
@@ -69,6 +69,10 @@ const AppRoutes = () => {
           <Route
             path="/submissions/:id"
             element={isAuthenticated ? <SubmissionResult /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/profile"
+            element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
           />
         </Route>
          

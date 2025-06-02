@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ProblemsList from './components/ProblemsList';
 import SolveProblem from './pages/SolveProblem';
-import ProfilePage from './pages/ProfilePage';
+import Profile from './components/Profile';
 import Contests from './pages/Contests';
 import ContestProblems from './pages/ContestProblems';
 import DiscussionForum from './components/DiscussionForum';
@@ -31,7 +31,7 @@ const AppContent = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/problems" element={<ProblemsList />} />
         <Route path="/problems/:id" element={<SolveProblem />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/contests" element={<Contests />} />
         <Route path="/contests/:id" element={<ContestProblems />} />
         <Route path="/discuss" element={<DiscussionForum />} />
