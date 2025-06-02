@@ -46,7 +46,7 @@ const Contests = () => {
           navigate(`/contests`);
         }
       });
-    }, 30000); // check every 30 seconds
+    }, 300000); // check every 30 seconds
 
     return () => clearInterval(interval);
   }, [contests, expandedContest, navigate]);

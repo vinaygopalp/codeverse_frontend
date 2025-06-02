@@ -17,11 +17,12 @@ const DiscussionForum = ({ problemName }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       setIsLoading(true);
-      const formattedName = problemName.toLowerCase().replace(/\s+/g, "_");
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_FETCH_MESSAGE}/${formattedName}`
-        );
+        const endpoint = isCentralForum 
+          ? `${import.meta.env.VITE_FETCH_MESSAGE}/central`
+          : `${import.meta.env.VITE_FETCH_MESSAGE}/${problemName.toLowerCase().replace(/\s+/g, "_")}`;
+        
+        const res = await axios.get(endpoint);
         const formattedMessages = res.data.map((msg) => ({
           sender: msg.user_name.username,
           message: msg.content,
@@ -37,11 +38,14 @@ const DiscussionForum = ({ problemName }) => {
       }
     };
     fetchMessages();
-  }, [problemName]);
+  }, [problemName, isCentralForum]);
 
   useEffect(() => {
-    const formattedName = problemName.toLowerCase().replace(/\s+/g, "_");
-    const socket = new WebSocket(`${import.meta.env.VITE_WEB_SOCKET_URL}/${formattedName}/`);
+    const endpoint = isCentralForum 
+      ? `${import.meta.env.VITE_WEB_SOCKET_URL}/central/`
+      : `${import.meta.env.VITE_WEB_SOCKET_URL}/${problemName.toLowerCase().replace(/\s+/g, "_")}/`;
+    
+    const socket = new WebSocket(endpoint);
     socketRef.current = socket;
 
     socket.onmessage = (event) => {
@@ -55,7 +59,7 @@ const DiscussionForum = ({ problemName }) => {
     };
 
     return () => socket.close();
-  }, [problemName]);
+  }, [problemName, isCentralForum]);
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -206,7 +210,7 @@ const DiscussionForum = ({ problemName }) => {
                 <h3 className="text-xl font-semibold mb-4 text-primary">About Discussion</h3>
                 <div className="space-y-4 text-base-content/80">
                   <p>
-                    Join the discussion about this problem. Share your thoughts, ask questions, or help others with their solutions.
+                    Join the discussion Forum. Share your thoughts, ask questions, or help others with their solutions.
                   </p>
                   <div className="bg-base-100 rounded-lg p-4">
                     <h4 className="font-semibold mb-2">Guidelines:</h4>
