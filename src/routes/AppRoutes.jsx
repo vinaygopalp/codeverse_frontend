@@ -13,6 +13,7 @@ import ContestProblems from "../pages/ContestProblems";
 import SubmissionsList from "../components/SubmissionsList";
 import SubmissionResult from "../components/SubmissionResult";
 
+
 const AppRoutes = () => {
   //   const isAuthenticated = !!localStorage.getItem("token");
   const { isAuthenticated, loading } = useAuth();
