@@ -62,7 +62,7 @@ const SubmissionsList = () => {
             },
             status: sub.status || 'Unknown',
             language: sub.language || 'Unknown',
-            submitted_at: sub.submitted_at || new Date().toISOString(),
+            created_at	: sub.created_at	 || new Date().toISOString(),
             test_cases_passed: sub.test_cases_passed || 0,
             total_test_cases: sub.total_test_cases || 0
           }));
@@ -127,7 +127,7 @@ const SubmissionsList = () => {
       const multiplier = sortOrder === 'desc' ? -1 : 1;
       switch(sortBy) {
         case 'date':
-          return multiplier * (new Date(b.submitted_at) - new Date(a.submitted_at));
+          return multiplier * (new Date(b.created_at	) - new Date(a.created_at	));
         case 'runtime':
           return multiplier * ((a.runtime || 0) - (b.runtime || 0));
         case 'memory':
@@ -405,7 +405,7 @@ const SubmissionsList = () => {
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                       </svg>
-                      {new Date(submission.submitted_at).toLocaleDateString()}
+                      {new Date(submission.created_at).toLocaleDateString()}
                     </motion.span>
                     <motion.span
                       whileHover={{ scale: 1.05 }}
@@ -415,7 +415,7 @@ const SubmissionsList = () => {
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      {new Date(submission.submitted_at).toLocaleTimeString()}
+                      {new Date(submission.created_at).toLocaleTimeString()}
                     </motion.span>
                   </div>
                 </div>
