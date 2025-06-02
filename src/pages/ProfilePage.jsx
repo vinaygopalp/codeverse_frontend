@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaCode, FaLaptopCode, FaServer, FaDatabase, FaDocker, FaAws, FaPython, FaJava } from 'react-icons/fa';
 import { SiDjango, SiFlask, SiMysql, SiSpringboot, SiNodedotjs } from 'react-icons/si';
 
+
 const ProfilePage = () => {
   const developers = [
     {
