@@ -141,11 +141,11 @@ const SubmissionsList = () => {
     const accuracy = (submission.test_cases_passed / submission.total_test_cases) * 100;
     
     if (accuracy === 100) {
-      return 'bg-success/20 dark:bg-success/10 border-2 border-success dark:border-success/50';
+      return 'bg-blue-100 dark:bg-blue-900/20 border-2 border-blue-500 dark:border-blue-400';
     } else if (accuracy > 0) {
-      return 'bg-warning/20 dark:bg-warning/10 border-2 border-warning dark:border-warning/50';
+      return 'bg-blue-50 dark:bg-blue-900/10 border-2 border-blue-400 dark:border-blue-300';
     } else {
-      return 'bg-error/20 dark:bg-error/10 border-2 border-error dark:border-error/50';
+      return 'bg-blue-50/50 dark:bg-blue-900/5 border-2 border-blue-300 dark:border-blue-200';
     }
   };
 
@@ -166,19 +166,19 @@ const SubmissionsList = () => {
     
     if (accuracy === 100) {
       return (
-        <svg className="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
         </svg>
       );
     } else if (accuracy > 0) {
       return (
-        <svg className="w-4 h-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       );
     } else {
       return (
-        <svg className="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       );
@@ -194,7 +194,7 @@ const SubmissionsList = () => {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <span className="loading loading-spinner loading-lg text-primary"></span>
+          <span className="loading loading-spinner loading-lg text-blue-500"></span>
           <p className="mt-4 text-base-content/70">Loading submissions...</p>
         </motion.div>
       </div>
@@ -227,7 +227,7 @@ const SubmissionsList = () => {
         className="container mx-auto px-4 py-8 mt-16"
       >
         <div className="text-center py-12">
-          <h2 className="text-2xl font-semibold text-base-content/70 mb-4">No Submissions Found</h2>
+          <h2 className="text-2xl font-semibold text-blue-500 mb-4">No Submissions Found</h2>
           <p className="text-base-content/50">You haven't made any submissions yet.</p>
         </div>
       </motion.div>
@@ -244,7 +244,7 @@ const SubmissionsList = () => {
         <motion.h1
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-300 bg-clip-text text-transparent"
+          className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 dark:from-blue-400 dark:via-blue-300 dark:to-blue-200 bg-clip-text text-transparent"
         >
           My Submissions
         </motion.h1>
@@ -387,11 +387,11 @@ const SubmissionsList = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="btn bg-gradient-to-r from-primary to-secondary hover:from-primary-focus hover:to-secondary-focus text-primary-content font-semibold border-none relative overflow-hidden group shadow-lg"
+                    className="btn bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-800 hover:from-blue-800 hover:via-indigo-700 hover:to-blue-900 text-white font-semibold border-none relative overflow-hidden group shadow-lg"
                     onClick={() => navigate(`/submissions/${submission.id}`)}
                   >
                     <span className="relative z-10">View Details</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary-focus to-secondary-focus opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-800 via-indigo-700 to-blue-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </motion.button>
                 </div>
                 
