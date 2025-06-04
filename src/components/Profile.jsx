@@ -41,6 +41,29 @@ const Profile = () => {
           apiUrl: `${import.meta.env.VITE_BE_URL}/api/submission/`
         });
         
+        // Fetch daily submission counts
+        const dailyCountsResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/api/submission/daily/count`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          params: {
+            user_id: userId
+          }
+        });
+
+        // Process daily counts into calendar data
+        const calendarData = {};
+        if (Array.isArray(dailyCountsResponse.data)) {
+          dailyCountsResponse.data.forEach(item => {
+            const date = new Date(item.date).toISOString().split('T')[0];
+            calendarData[date] = {
+              count: item.count,
+              successful: 0 // We don't have success info in this endpoint
+            };
+          });
+        }
+
+        // Fetch regular submissions for other stats
         const submissionsResponse = await axios.get(`${import.meta.env.VITE_BE_URL}/api/submission/`, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -75,33 +98,6 @@ const Profile = () => {
         let totalRuntime = 0;
         let successfulSubmissions = 0;
 
-        // Create submission calendar data
-        const calendarData = {};
-        submissions.forEach(sub => {
-          if (!sub.submitted_at) {
-            console.warn('Submission missing submitted_at:', sub);
-            return;
-          }
-          // Try to parse date
-          const dateObj = new Date(sub.submitted_at);
-          if (isNaN(dateObj.getTime())) {
-            console.warn('Invalid submitted_at date:', sub.submitted_at, sub);
-            return;
-          }
-          const date = dateObj.toISOString().split('T')[0];
-          if (!calendarData[date]) {
-            calendarData[date] = {
-              count: 0,
-              successful: 0
-            };
-          }
-          calendarData[date].count++;
-          if (sub.test_cases_passed === sub.total_test_cases) {
-            calendarData[date].successful++;
-          }
-        });
-        console.log('Submission calendar:', calendarData);
-
         // Sort submissions by date for recent activity
         const sortedSubmissions = [...submissions].sort((a, b) => 
           new Date(b.submitted_at) - new Date(a.submitted_at)
@@ -134,7 +130,7 @@ const Profile = () => {
         });
 
         // Find all years in the data
-        const years = Array.from(new Set(submissions.map(sub => new Date(sub.submitted_at).getFullYear())));
+        const years = Array.from(new Set(Object.keys(calendarData).map(date => new Date(date).getFullYear())));
         years.sort((a, b) => b - a);
         setAvailableYears(years);
         if (!years.includes(selectedYear)) setSelectedYear(years[0]);
@@ -202,30 +198,42 @@ const Profile = () => {
         dateCount[date] = val.count;
       }
     });
-    // 2. Find the start and end date for the selected year
-    const start = new Date(selectedYear, 0, 1);
-    const end = new Date(selectedYear, 11, 31);
-    // Find previous Sunday for start
-    start.setDate(start.getDate() - start.getDay());
-    // 3. Build weeks: each week is an array of 7 days (Sun-Sat)
+
+    // 2. Create a matrix of weeks for the entire year
     const weeks = [];
-    let current = new Date(start);
-    while (current <= end) {
+    const firstDayOfYear = new Date(selectedYear, 0, 1);
+    const lastDayOfYear = new Date(selectedYear, 11, 31);
+    
+    // Start from the Sunday before January 1st
+    const startDate = new Date(firstDayOfYear);
+    startDate.setDate(startDate.getDate() - startDate.getDay());
+    
+    // End on the Saturday after December 31st
+    const endDate = new Date(lastDayOfYear);
+    endDate.setDate(endDate.getDate() + (6 - endDate.getDay()));
+    
+    // Generate all weeks
+    let currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
       const week = [];
-      for (let d = 0; d < 7; d++) {
-        const dateStr = current.toISOString().split('T')[0];
+      for (let i = 0; i < 7; i++) {
+        const dateStr = currentDate.toISOString().split('T')[0];
         week.push({
           date: dateStr,
-          count: dateCount[dateStr] || 0
+          count: dateCount[dateStr] || 0,
+          hasData: dateCount[dateStr] !== undefined,
+          month: currentDate.getMonth()
         });
-        current.setDate(current.getDate() + 1);
+        currentDate.setDate(currentDate.getDate() + 1);
       }
       weeks.push(week);
     }
+    
     return weeks;
   };
 
-  const getColorClass = (count) => {
+  const getColorClass = (count, hasData) => {
+    if (!hasData) return 'bg-base-300 opacity-30';
     // GitHub style: 0=gray, 1=light, 2=medium, 3=dark, 4+=darker
     if (count === 0) return 'bg-base-300';
     if (count === 1) return 'bg-green-100';
@@ -237,27 +245,30 @@ const Profile = () => {
 
   const renderContributionHeatmap = () => {
     const weeks = getContributionMatrix();
-    const daysOfWeek = ['Sun', 'Mon', 'Wed', 'Fri'];
-    // Find the week indices where a new month starts, and only show month labels for weeks that contain at least one day in that month and in the selected year
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    // Calculate month labels
     const monthLabels = [];
-    let prevMonth = null;
-    weeks.forEach((week, i) => {
-      // Find the first day in the week that is in the selected year
+    let lastMonth = -1;
+    
+    weeks.forEach((week, weekIndex) => {
+      // Find the first day of the week that's in the current year
       const firstDayInYear = week.find(day => new Date(day.date).getFullYear() === selectedYear);
+      
       if (firstDayInYear) {
-        const month = new Date(firstDayInYear.date).getMonth();
-        if (month !== prevMonth) {
-          monthLabels[i] = new Date(firstDayInYear.date).toLocaleString('default', { month: 'short' });
-          prevMonth = month;
+        const currentMonth = firstDayInYear.month;
+        if (currentMonth !== lastMonth) {
+          monthLabels[weekIndex] = new Date(selectedYear, currentMonth, 1)
+            .toLocaleString('default', { month: 'short' });
+          lastMonth = currentMonth;
         } else {
-          monthLabels[i] = '';
+          monthLabels[weekIndex] = '';
         }
       } else {
-        monthLabels[i] = '';
+        monthLabels[weekIndex] = '';
       }
     });
-    // Only render weeks that have at least one day in the selected year
-    const filteredWeeks = weeks.filter(week => week.some(day => new Date(day.date).getFullYear() === selectedYear));
+
     return (
       <div className="bg-base-200 rounded-lg shadow-xl p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
@@ -279,10 +290,10 @@ const Profile = () => {
         <div className="w-full overflow-x-auto">
           <div className="flex flex-col">
             {/* Month labels */}
-            <div className="flex ml-10 flex-nowrap">
-              {filteredWeeks.map((week, i) => (
+            <div className="flex ml-12 flex-nowrap">
+              {weeks.map((week, i) => (
                 <div key={i} className="w-4 text-xs text-base-content/70 text-center">
-                  {monthLabels[weeks.indexOf(week)]}
+                  {monthLabels[i]}
                 </div>
               ))}
             </div>
@@ -295,17 +306,32 @@ const Profile = () => {
               </div>
               {/* Heatmap grid */}
               <div className="flex flex-1 flex-nowrap">
-                {filteredWeeks.map((week, wi) => (
-                  <div key={wi} className={`flex flex-col${monthLabels[weeks.indexOf(week)] && wi !== 0 ? ' ml-2 md:ml-4' : ''}`}> {/* Add space between months */}
+                {weeks.map((week, wi) => (
+                  <div key={wi} className={`flex flex-col${monthLabels[wi] && wi !== 0 ? ' ml-2 md:ml-4' : ''}`}>
                     {week.map((day, di) => {
                       const isInYear = new Date(day.date).getFullYear() === selectedYear;
+                      const formattedDate = new Date(day.date).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      });
                       return (
                         <div
                           key={di}
-                          className={`w-4 h-4 m-[1px] rounded ${isInYear ? getColorClass(day.count) : 'bg-base-300 opacity-30'}`}
-                          title={`${day.date}: ${day.count} submission${day.count !== 1 ? 's' : ''}`}
-                          style={{ opacity: isInYear ? (di % 2 === 0 ? 1 : 0.85) : 0.2 }}
-                        />
+                          className={`w-4 h-4 m-[1px] rounded ${getColorClass(day.count, day.hasData)} ${day.hasData ? 'relative group' : ''}`}
+                          style={{ opacity: isInYear ? 1 : 0.2 }}
+                        >
+                          {day.hasData && (
+                            <div className="absolute z-10 hidden group-hover:block bg-base-300 text-base-content px-3 py-2 rounded-lg shadow-lg text-sm whitespace-nowrap -top-12 left-1/2 transform -translate-x-1/2">
+                              <div className="font-semibold">{formattedDate}</div>
+                              <div className="text-base-content/80">
+                                {day.count} submission{day.count !== 1 ? 's' : ''}
+                              </div>
+                              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 border-8 border-transparent border-t-base-300"></div>
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
@@ -313,7 +339,7 @@ const Profile = () => {
               </div>
             </div>
             {/* Legend */}
-            <div className="flex items-center gap-1 mt-4 ml-10">
+            <div className="flex items-center gap-1 mt-4 ml-12">
               <span className="text-xs text-base-content/70">Less</span>
               <div className="w-4 h-4 rounded bg-base-300"></div>
               <div className="w-4 h-4 rounded bg-green-100"></div>
