@@ -160,7 +160,7 @@ const Profile = () => {
         setLoading(false);
       }
     };
-
+ 
     fetchUserData();
   }, [navigate]);
 
